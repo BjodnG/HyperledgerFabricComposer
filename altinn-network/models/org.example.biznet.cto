@@ -1,0 +1,78 @@
+/**
+ * My commodity trading network
+ */
+namespace org.acme.biznet
+
+participant StockOwner identified by socialSecurityNr {
+    o String socialSecurityNr
+    o String name
+}
+
+participant Firm identified by orgnr {
+    o String orgnr
+    o String firmName
+}
+
+participant BRREG identified by id {
+  o String id
+}
+
+participant Journalist identified by socialSecurityNr {
+  o String socialSecurityNr
+}
+
+participant Offentlig identified by id {
+  o String id
+}
+
+asset RegisterOfShareholders identified by orgnr {
+    o String orgnr
+    o Double numberOfShares
+    o Double capital
+    o Double firstDenomination
+      --> Firm belongsTo
+}
+
+asset Stock identified by id {
+  o String id
+  o String type
+  o Double denomination
+  o Double value
+  o Double marketValue
+  o DateTime purchasedDate
+    --> RegisterOfShareholders registerOfShareholders
+    --> StockOwner owner
+}
+
+transaction SaleOfStock {
+  o String message
+  o Double bid
+  o Integer quantity
+  o String oldOwner
+  o String registerOfShareholders
+    --> StockOwner newOwner
+}
+
+transaction ExpandCapital {
+  o Double verdi
+  --> RegisterOfShareholders registerOfShareholders
+}
+
+transaction ChangeStockValue {
+  o Double newValue
+  o String registerOfShareholders
+}
+
+transaction CreateStockBook {
+  o Double capital
+  o Integer numberOfStock 
+  o Integer[] distribution
+  --> Firm firm
+  --> StockOwner[] ownsNewStock
+}
+
+transaction AddStocks {
+  o Integer amount
+  --> RegisterOfShareholders registerOfShareholders
+  --> StockOwner stockOwner
+}

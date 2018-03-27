@@ -1,0 +1,21 @@
+query selectAllStocks {
+  description: "Select all Stock belonging to RegisterOfShareholders with orgnr _$orgnr"
+  statement:
+      SELECT org.acme.biznet.Stock
+          WHERE (registerOfShareholders == _$orgnr)
+}
+
+query getFirstStocks {
+  description: "Hent de første x antall Stocks en eier har i gitt RegisterOfShareholders"
+  statement:
+  	SELECT org.acme.biznet.Stock
+  		WHERE (registerOfShareholders == _$firm AND owner == _$ownerIn)
+  			ORDER BY [purchasedDate ASC]
+}
+
+query selectHighestStockId {
+  description: "Henter høyeste ID fra Stock for å mocke auto-increment"
+  statement:
+  	SELECT org.acme.biznet.Stock
+  		ORDER BY [id DESC]
+}

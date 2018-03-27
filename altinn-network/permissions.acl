@@ -1,0 +1,121 @@
+/**
+ * Access control rules for altinn-network
+ */
+
+/* -- BRREG -- */
+rule BRREGReadAllRegisterOfShareholders {
+	description: "Allow BRREG to read RegisterOfShareholders"
+  	participant: "org.acme.biznet.BRREG"
+  	operation: READ
+    resource: "org.acme.biznet.RegisterOfShareholders"
+  	action: ALLOW
+}
+
+/* -- Firm -- */
+rule FirmReadDeleteOwnRegisterOfShareholders {
+	description: "Allow Firm to read and delete own RegisterOfShareholders"
+  	participant(p): "org.acme.biznet.Firm"
+  	operation: READ, DELETE
+    resource(r): "org.acme.biznet.RegisterOfShareholders"
+  	condition: (r.registerOfShareholders.getIdentifier() == p.getIdentifier())
+  	action: ALLOW
+}
+
+rule createStockBookTx {
+  description: "Lets all stockOwners to use CreateStock transaction."
+  participant: "org.acme.biznet.Firm"
+  operation: ALL
+  resource: "org.acme.biznet.CreateStockBook"
+  action: ALLOW
+}
+
+rule createStockBook {
+    description: "Lets stockOwners updates owner of stock after a transaction is made"
+    participant: "org.acme.biznet.Firm"
+    operation: CREATE
+    resource: "org.acme.biznet.RegisterOfShareholders"
+    transaction: "org.acme.biznet.CreateStockBook"
+    action: ALLOW
+}
+
+rule FirmReadOwnStock {
+	description: "Allow Firm to read all Stock connected to Firm's RegisterOfShareholders"
+  	participant(t): "org.acme.biznet.Firm"
+  	operation: READ
+    	resource(a): "org.acme.biznet.Stock"
+  	condition: (a.registerOfShareholders.getIdentifier() == t.getIdentifier())
+  	action: ALLOW
+}
+
+rule FirmReadOwnInfo {
+	description: "Allow Firm to read own Firm"
+  	participant(t): "org.acme.biznet.Firm"
+  	operation: READ
+    	resource(f): "org.acme.biznet.Firm"
+  	condition: (f.getIdentifier() == t.getIdentifier())
+  	action: ALLOW
+}
+
+/* -- Journalist -- */
+rule JournalistReadAllRegisterOfShareholders {
+	description: "Allow Journalist to read RegisterOfShareholders"
+  	participant: "org.acme.biznet.Journalist"
+  	operation: READ
+    resource: "org.acme.biznet.RegisterOfShareholders"
+  	action: ALLOW
+}
+
+/* -- StockOwner -- */
+rule StockOwnerReadOwnStock {
+	description: "Allow StockOwner to only read all Stock"
+  	participant: "org.acme.biznet.StockOwner"
+  	operation: READ
+  	resource: "org.acme.biznet.Stock"
+  	action: ALLOW
+}
+
+rule StockOwnerReadOwnInfo {
+	description: "Allow StockOwner to read own StockOwner"
+  	participant(t): "org.acme.biznet.StockOwner"
+  	operation: READ
+    	resource(f): "org.acme.biznet.StockOwner"
+  	condition: (f.getIdentifier() == t.getIdentifier())
+  	action: ALLOW
+}
+
+rule SellStock {
+  description: "Lets all StockOwner to use SaleOfStock transaction."
+  participant: "org.acme.biznet.StockOwner"
+  operation: ALL
+  resource: "org.acme.biznet.SaleOfStock"
+  action: ALLOW
+}
+
+rule UpdateStockDuringSale {
+    description: "Lets StockOwner updates owner of stock after a transaction is made"
+    participant(m): "org.acme.biznet.StockOwner"
+    operation: UPDATE
+    resource(v): "org.acme.biznet.Stock"
+    transaction(tx): "org.acme.biznet.SaleOfStock"
+    condition: (v.owner.getIdentifier() == m.getIdentifier())
+    action: ALLOW
+}
+
+/* -- Admin -- */
+rule Admin {
+	description: "Allow Admin access to all resources"
+  	participant: "org.hyperledger.composer.system.NetworkAdmin"
+  	operation: ALL
+    resource: "org.acme.biznet.**"
+  	action: ALLOW
+}
+
+/* -- System -- */
+rule SystemACL {
+  description:  "System ACL to permit all access"
+  participant: "ANY"
+  operation: ALL
+  resource: "org.hyperledger.composer.system.**"
+  action: ALLOW
+}
+

@@ -1,0 +1,83 @@
+# Copyright IBM Corp. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+version: '2'
+
+networks:
+  byfn:
+services:
+  ca0:
+    image: hyperledger/fabric-ca
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca-businessorg
+      - FABRIC_CA_SERVER_TLS_ENABLED=true
+      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.businessorg.altinn.com-cert.pem
+      - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/CA1_PRIVATE_KEY
+    ports:
+      - "7054:7054"
+    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.businessorg.altinn.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/CA1_PRIVATE_KEY -b admin:adminpw -d'
+    volumes:
+      - ./crypto-config/peerOrganizations/businessorg.altinn.com/ca/:/etc/hyperledger/fabric-ca-server-config
+    container_name: ca_peerBusinessOrg
+    networks:
+      - byfn
+
+  ca1:
+    image: hyperledger/fabric-ca
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca-publicorg
+      - FABRIC_CA_SERVER_TLS_ENABLED=true
+      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.publicorg.altinn.com-cert.pem
+      - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/CA2_PRIVATE_KEY
+    ports:
+      - "8054:7054"
+    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.publicorg.altinn.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/CA2_PRIVATE_KEY -b admin:adminpw -d'
+    volumes:
+      - ./crypto-config/peerOrganizations/publicorg.altinn.com/ca/:/etc/hyperledger/fabric-ca-server-config
+    container_name: ca_peerPublicOrg
+    networks:
+      - byfn
+
+  orderer.altinn.com:
+    extends:
+      file:   base/docker-compose-base.yaml
+      service: orderer.altinn.com
+    container_name: orderer.altinn.com
+    networks:
+      - byfn
+
+  peer0.businessorg.altinn.com:
+    container_name: peer0.businessorg.altinn.com
+    extends:
+      file:  base/docker-compose-base.yaml
+      service: peer0.businessorg.altinn.com
+    networks:
+      - byfn
+
+  peer1.businessorg.altinn.com:
+    container_name: peer1.businessorg.altinn.com
+    extends:
+      file:  base/docker-compose-base.yaml
+      service: peer1.businessorg.altinn.com
+    networks:
+      - byfn
+
+  peer0.publicorg.altinn.com:
+    container_name: peer0.publicorg.altinn.com
+    extends:
+      file:  base/docker-compose-base.yaml
+      service: peer0.publicorg.altinn.com
+    networks:
+      - byfn
+
+  peer1.publicorg.altinn.com:
+    container_name: peer1.publicorg.altinn.com
+    extends:
+      file:  base/docker-compose-base.yaml
+      service: peer1.publicorg.altinn.com
+    networks:
+      - byfn

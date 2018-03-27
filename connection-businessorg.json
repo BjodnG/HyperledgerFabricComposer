@@ -1,0 +1,44 @@
+{
+    "name": "altinn-network-businessorg",
+    "type": "hlfv1",
+    "mspID": "BusinessOrgMSP",
+    "peers": [
+        {
+            "requestURL": "grpcs://localhost:7051",
+            "eventURL": "grpcs://localhost:7053",
+            "cert": "crypto-config/peerOrganizations/businessorg.altinn.com/peers/peer0.businessorg.altinn.com/tls/ca.crt",
+            "hostnameOverride": "peer0.businessorg.altinn.com"
+        },
+        {
+            "requestURL": "grpcs://localhost:8051",
+            "eventURL": "grpcs://localhost:8053",
+            "cert": "crypto-config/peerOrganizations/businessorg.altinn.com/peers/peer0.businessorg.altinn.com/tls/ca.crt",
+            "hostnameOverride": "peer1.businessorg.altinn.com"
+        },
+        {
+            "requestURL": "grpcs://localhost:9051",
+            "cert": "crypto-config/peerOrganizations/publicorg.altinn.com/peers/peer0.publicorg.altinn.com/tls/ca.crt",
+            "hostnameOverride": "peer0.publicorg.altinn.com"
+        },
+        {
+            "requestURL": "grpcs://localhost:10051",
+            "cert": "crypto-config/peerOrganizations/publicorg.altinn.com/peers/peer0.publicorg.altinn.com/tls/ca.crt",
+            "hostnameOverride": "peer1.publicorg.altinn.com"
+        }
+    ],
+    "ca": {
+        "url": "https://localhost:7054",
+        "name": "ca-businessorg",
+        "cert": "crypto-config/peerOrganizations/businessorg.altinn.com/peers/peer0.businessorg.altinn.com/tls/ca.crt",
+        "hostnameOverride": "ca.businessorg.altinn.com"
+    },
+    "orderers": [
+        {
+            "url" : "grpcs://localhost:7050",
+            "cert": "crypto-config/ordererOrganizations/altinn.com/orderers/orderer.altinn.com/tls/ca.crt",
+            "hostnameOverride": "orderer.altinn.com"
+        }
+    ],
+    "channel": "mychannel",
+    "timeout": 300
+}
